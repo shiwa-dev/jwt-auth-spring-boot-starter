@@ -1,0 +1,2 @@
+dev.shiwa.jwtstarter.autoconfigure.JwtAutoConfiguration
+dev.shiwa.jwtstarter.autoconfigure.JwtFilterAutoConfiguration

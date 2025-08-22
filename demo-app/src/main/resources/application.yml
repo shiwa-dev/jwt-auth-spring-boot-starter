@@ -1,0 +1,36 @@
+jwt:
+  auth:
+    # Identifier for the JWT issuer, used to validate the 'iss' claim in tokens
+    issuer: jwt-starter-demo
+
+    # Secret key used for signing and verifying JWT tokens (HS256 algorithm)
+    # Must be at least 32 characters long (256 bits) for strong HMAC-based security
+    secret: my-super-secret-key-1234567890!!
+
+    # Token Time-To-Live (TTL) in milliseconds
+    # Determines how long a generated token remains valid
+    # 3600000 ms = 1 hour
+    ttlMillis: 3600000
+
+    # List of URL patterns that require JWT authentication
+    protected-paths:
+      - /api/*
+
+    # List of URL patterns to exclude from JWT authentication
+    # Can be left empty if no exclusions are needed
+    excluded-paths:
+
+  filter:
+    # Enables or disables the JWT filter globally
+    enabled: true
+
+springdoc:
+  api-docs:
+    # Path where the OpenAPI (Swagger) JSON documentation is exposed
+    # Default is /v3/api-docs, but customized here
+    path: /api-docs
+
+  swagger-ui:
+    # Path where the Swagger UI (HTML interface for testing APIs) is served
+    # Default is /swagger-ui.html
+    path: /swagger-ui.html
