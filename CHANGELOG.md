@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.0.1] – 2025-08-21
+## [0.1.0] – 2025-08-27
 
 ### ✨ Added
 - Initial release of the JWT Auth Starter for Spring Boot 3+

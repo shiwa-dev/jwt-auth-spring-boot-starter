@@ -5,9 +5,11 @@
 	<parent>
 		<groupId>dev.shiwa.jwtstarter</groupId>
 		<artifactId>jwt-auth-spring-boot-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
+	<groupId>dev.shiwa.jwtstarter</groupId>
 	<artifactId>jwt-auth-spring-boot-starter</artifactId>
+	<version>0.1.0</version>
 	<packaging>jar</packaging>
 	<name>JWT Auth Spring Boot Starter</name>
 	<description>JWT authentication starter for Spring Boot 3+</description>
@@ -40,9 +42,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>dev.shiwa.jwtstarter</groupId>
 			<artifactId>jwt-auth-spring-boot-autoconfigure</artifactId>
-			<version>${project.version}</version>
+			<version>0.1.0</version>
 		</dependency>
 	</dependencies>
 
