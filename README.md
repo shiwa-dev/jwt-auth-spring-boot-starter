@@ -54,7 +54,7 @@ To build just the starter module:
 
 > 📝 Only the `jwt-auth-spring-boot-starter` module is intended for publication on Maven Central. The demo and autoconfigure modules remain local dependencies.
 
-### ⚙️ Quick Start
+### ⚙️ Quick Start (Maven)
 
 ```xml
 <dependency>
@@ -64,8 +64,17 @@ To build just the starter module:
 </dependency>
 ```
 
+### ⚙️ Quick Start (Gradle)
+
+```groovy
+implementation 'dev.shiwa.jwtstarter:jwt-auth-spring-boot-starter:0.0.1'
+```
+
+---
+
+### 🔧 Configuration with `application.yml`
+
 ```yaml
-# application.yml
 jwt:
   auth:
     # Identifier for the JWT issuer, used to validate the 'iss' claim in tokens
@@ -79,7 +88,7 @@ jwt:
     # Determines how long a generated token remains valid
     # 3600000 ms = 1 hour
     ttlMillis: 3600000
-    
+
     # List of URL patterns that require JWT authentication
     # Supports Ant-style path patterns like /api/*, /api/**, /admin/**
     protected-paths:
@@ -88,6 +97,18 @@ jwt:
     # List of URL patterns to exclude from JWT authentication
     # Supports Ant-style patterns as above. Can be left empty if no exclusions are needed.
     excluded-paths:
+```
+
+---
+
+### 🔧 Configuration with `application.properties`
+
+```properties
+jwt.auth.issuer=jwt-starter-demo
+jwt.auth.secret=my-super-secret-key-1234567890!!
+jwt.auth.ttlMillis=3600000
+jwt.auth.protected-paths=/api/*
+jwt.auth.excluded-paths=
 ```
 
 ### 🧪 Example Usage
