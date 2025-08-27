@@ -4,7 +4,6 @@
 [![License](https://img.shields.io/github/license/shiwa-dev/jwt-auth-spring-boot-starter.svg)](https://github.com/shiwa-dev/jwt-auth-spring-boot-starter/blob/main/LICENSE)
 [![Sponsor](https://img.shields.io/badge/sponsor-❤-brightgreen.svg)](https://github.com/sponsors/shiwa-dev)
 
-
 A production-ready, plug-and-play **JWT authentication starter** for Spring Boot 3.x.  
 This starter follows best practices for secure token handling, integrates easily into any Spring Boot application, and can save you **up to 40 hours** of development time.
 
@@ -26,7 +25,7 @@ This project is organized into:
 - **`jwt-auth-spring-boot-starter`** – Combines core logic into an easy-to-use starter  
 - **`demo-app`** – A working example Spring Boot app demonstrating usage
 
-## 🧱 Project Structure (Multi-Module Setup)
+### 🧱 Project Structure (Multi-Module Setup)
 
 This repository follows a **multi-module Maven structure**, meaning the project is split into separate submodules that can be developed and built together or individually:
 
@@ -69,10 +68,26 @@ To build just the starter module:
 # application.yml
 jwt:
   auth:
-    secret: your-256-bit-secret
-    issuer: your-app-name
-    expirySeconds: 3600
-    enabled: true
+    # Identifier for the JWT issuer, used to validate the 'iss' claim in tokens
+    issuer: jwt-starter-demo
+
+    # Secret key used for signing and verifying JWT tokens (HS256 algorithm)
+    # Must be at least 32 characters long (256 bits) for strong HMAC-based security
+    secret: my-super-secret-key-1234567890!!
+
+    # Token Time-To-Live (TTL) in milliseconds
+    # Determines how long a generated token remains valid
+    # 3600000 ms = 1 hour
+    ttlMillis: 3600000
+    
+    # List of URL patterns that require JWT authentication
+    # Supports Ant-style path patterns like /api/*, /api/**, /admin/**
+    protected-paths:
+      - /api/*
+
+    # List of URL patterns to exclude from JWT authentication
+    # Supports Ant-style patterns as above. Can be left empty if no exclusions are needed.
+    excluded-paths:
 ```
 
 ### 🧪 Example Usage
@@ -82,13 +97,37 @@ jwt:
 public class MyController {
 
     @Autowired
-    private JwtTokenVerifier verifier;
+    private JwtTokenVerifier verifier; // Utility for validating and parsing tokens
+    
+    @Autowired
+    private JwtTokenGenerator tokenGenerator; // Utility for generating new tokens
+    
+    /**
+     * Example login endpoint.
+     * Normally, you would validate username/password here.
+     * For demo purposes, a static JWT token is returned without credential checks.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login() {
+       // Here you would normally check user credentials (username/password)
+       // For testing purposes, we just return a demo token without validation
+       String token = tokenGenerator.generateToken("demo-user", List.of("USER", "ADMIN"));
+       
+       return ResponseEntity.ok(Map.of("token", token));
+    }
 
+    /**
+     * Example of a secured endpoint.
+     * The request must include an Authorization header with a valid token.
+     */
     @GetMapping("/api/secure")
     public boolean verify(@RequestHeader("Authorization") String token) {
         return verifier.isValid(token);
     }
 
+    /**
+     * Example endpoint that returns details about the current user (from the JWT).
+     */
     @GetMapping("/api/me")
     public JwtAuthentication me(@RequestHeader("Authorization") String token) {
         return verifier.parseToken(token);
@@ -96,14 +135,58 @@ public class MyController {
 }
 ```
 
-### 🔐 Token Generation
+#### ✅ Step-by-Step: Requesting a Token & Calling Endpoints
 
-```java
-@Autowired
-JwtTokenGenerator generator;
+1. **Start the app**
+   Make sure your `application.yml` is configured (issuer/secret/TTL & path rules) and start the app, e.g.:
 
-String token = generator.generateToken("alice", List.of("USER", "ADMIN"));
-```
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+2. **Request a token** (simple demo login without credential check):
+
+   ```bash
+   curl -X POST http://localhost:8080/login -H "Content-Type: application/json"
+   ```
+
+   **Response** (example):
+
+   ```json
+   { "token": "<JWT_HERE>" }
+   ```
+
+   Copy the value of `token` (without quotes).
+
+   > Tip: This is a **Bearer Token**. Do not modify or shorten it.
+
+3. **Call /api/me** – Show token details:
+
+   ```bash
+   curl -X GET http://localhost:8080/api/me \
+     -H "Authorization: Bearer <JWT_HERE>"
+   ```
+
+   **Expected**: A JSON object with information contained in the token (e.g. subject/username, roles, issuer, expiration).
+
+4. **Call /api/secure** – Validate token:
+
+   ```bash
+   curl -X GET http://localhost:8080/api/secure \
+     -H "Authorization: Bearer <JWT_HERE>"
+   ```
+
+   **Expected**: `true` (if the token is valid).
+
+5. **Swagger UI** (optional):
+   Open `http://localhost:8080/swagger-ui/index.html`, click **Authorize**, enter `Bearer <JWT_HERE>` and confirm. Afterwards, you can call `/api/me` and `/api/secure` directly from the UI.
+
+**Common Issues**
+
+* Missing **`Bearer`** prefix in `Authorization` header → always send `Authorization: Bearer <JWT>`.
+* Token expired (**TTL** reached) → request a new token via `/login`.
+* Wrong `issuer` or `secret` → check your `application.yml` settings.
+* Path not protected → check `protected-paths`/`excluded-paths` in `application.yml`.
 
 ## 📺 Demo
 
@@ -198,3 +281,4 @@ This project uses the following third-party library:
 Have questions about the Pro version or licensing?
 
 📧 Contact us at [support@shiwa.dev](mailto:support@shiwa.dev)
+
