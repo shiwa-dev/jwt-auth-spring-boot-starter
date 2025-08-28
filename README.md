@@ -1,5 +1,12 @@
 ## 🔐 Spring Boot JWT Auth Starter
 
+[![Maven Central](https://img.shields.io/maven-central/v/dev.shiwa.jwtstarter/jwt-auth-spring-boot-starter.svg)](https://search.maven.org/artifact/dev.shiwa.jwtstarter/jwt-auth-spring-boot-starter)
+[![License](https://img.shields.io/github/license/shiwa-dev/jwt-auth-spring-boot-starter.svg)](https://github.com/shiwa-dev/jwt-auth-spring-boot-starter/blob/main/LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-❤-brightgreen.svg)](https://github.com/sponsors/shiwa-dev)
+
+A production-ready, plug-and-play **JWT authentication starter** for Spring Boot 3.x.  
+This starter follows best practices for secure token handling, integrates easily into any Spring Boot application, and can save you **up to 40 hours** of development time.
+
 ## 📑 Table of Contents
 - [Features](#-features-free-version)
 - [Modules](#-modules)
@@ -22,14 +29,6 @@
 - [Disclaimer](#-disclaimer)
 - [Third-Party Licenses](#-third-party-licenses)
 - [Questions](#-questions)
-
-
-[![Maven Central](https://img.shields.io/maven-central/v/dev.shiwa.jwtstarter/jwt-auth-spring-boot-starter.svg)](https://search.maven.org/artifact/dev.shiwa.jwtstarter/jwt-auth-spring-boot-starter)
-[![License](https://img.shields.io/github/license/shiwa-dev/jwt-auth-spring-boot-starter.svg)](https://github.com/shiwa-dev/jwt-auth-spring-boot-starter/blob/main/LICENSE)
-[![Sponsor](https://img.shields.io/badge/sponsor-❤-brightgreen.svg)](https://github.com/sponsors/shiwa-dev)
-
-A production-ready, plug-and-play **JWT authentication starter** for Spring Boot 3.x.  
-This starter follows best practices for secure token handling, integrates easily into any Spring Boot application, and can save you **up to 40 hours** of development time.
 
 ### ✨ Features (Free Version)
 
