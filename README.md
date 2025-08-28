@@ -15,9 +15,9 @@ This starter follows best practices for secure token handling, integrates easily
 - [Quick Start](#quick-start-maven)
   - [Maven](#quick-start-maven)
   - [Gradle](#quick-start-gradle)
-- [Configuration](#configuration-with-applicationyml)
-  - [YAML](#configuration-with-applicationyml)
-  - [Properties](#configuration-with-applicationproperties)
+- [Configuration](#configuration-with-application-yml)
+  - [YAML](#configuration-with-application-yml)
+  - [Properties](#configuration-with-application-properties)
 - [Usage](#example-usage)
   - [Step-by-Step Guide](#step-by-step-requesting-a-token-calling-endpoints)
 - [Demo](#demo)
@@ -106,7 +106,7 @@ implementation 'dev.shiwa.jwtstarter:jwt-auth-spring-boot-starter:0.1.0'
 
 ---
 
-### 🔧 Configuration with `application.yml`
+### Configuration with `application.yml`
 
 ```yaml
 jwt:
