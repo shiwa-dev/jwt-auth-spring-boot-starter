@@ -1,5 +1,29 @@
 ## 🔐 Spring Boot JWT Auth Starter
 
+## 📑 Table of Contents
+- [Features](#-features-free-version)
+- [Modules](#-modules)
+  - [Project Structure](#-project-structure-multi-module-setup)
+- [Build](#-build-instructions)
+- [Quick Start](#-quick-start-maven)
+  - [Maven](#-quick-start-maven)
+  - [Gradle](#-quick-start-gradle)
+- [Configuration](#-configuration-with-applicationyml)
+  - [YAML](#-configuration-with-applicationyml)
+  - [Properties](#-configuration-with-applicationproperties)
+- [Usage](#-example-usage)
+  - [Step-by-Step Guide](#-step-by-step-requesting-a-token--calling-endpoints)
+- [Demo](#-demo)
+  - [Swagger UI](#-using-authorization-header-in-swagger-ui)
+  - [Example](#-example)
+- [Comparison](#-free-vs-pro)
+- [Pro Version](#-pro-version-coming-soon)
+- [License](#-license)
+- [Disclaimer](#-disclaimer)
+- [Third-Party Licenses](#-third-party-licenses)
+- [Questions](#-questions)
+
+
 [![Maven Central](https://img.shields.io/maven-central/v/dev.shiwa.jwtstarter/jwt-auth-spring-boot-starter.svg)](https://search.maven.org/artifact/dev.shiwa.jwtstarter/jwt-auth-spring-boot-starter)
 [![License](https://img.shields.io/github/license/shiwa-dev/jwt-auth-spring-boot-starter.svg)](https://github.com/shiwa-dev/jwt-auth-spring-boot-starter/blob/main/LICENSE)
 [![Sponsor](https://img.shields.io/badge/sponsor-❤-brightgreen.svg)](https://github.com/sponsors/shiwa-dev)
