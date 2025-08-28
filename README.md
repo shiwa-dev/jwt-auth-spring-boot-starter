@@ -1,6 +1,7 @@
 ## 🔐 Spring Boot JWT Auth Starter
 
 ## 📑 Table of Contents
+- [Compatibility](#version-compatibility)
 - [Features](#features-free-version)
 - [Modules](#modules)
   - [Project Structure](#project-structure-multi-module-setup)
@@ -30,6 +31,16 @@
 
 A production-ready, plug-and-play **JWT authentication starter** for Spring Boot 3.x.  
 This starter follows best practices for secure token handling, integrates easily into any Spring Boot application, and can save you **up to 40 hours** of development time.
+
+---
+
+### 📌 Version Compatibility
+
+* ✅ **Supported & tested**: Spring Boot **3.4.x – 3.5.x** (latest: 3.5.5)
+* ⚠️ **Not compatible**: Spring Boot 2.x
+* ℹ️ Spring Boot 3.3.x has reached **end-of-life (EOL)** and is therefore **not supported**.
+
+---
 
 ### ✨ Features (Free Version)
 
