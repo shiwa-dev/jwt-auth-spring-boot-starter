@@ -54,6 +54,11 @@ public class JwtAuthProperties {
      */
     private long ttlMillis;
 
+    private long refreshTtlMillis = 7L * 24 * 60 * 60 * 1000; // 7 days
+    private boolean refreshEnabled = true;
+    private boolean refreshRotate = true; // rotation on refresh
+    private boolean reuseDetection = true; // detect reuse of old RTs
+
     /**
      * The HTTP header used to transmit the JWT token. Defaults to "Authorization".
      */
@@ -167,5 +172,37 @@ public class JwtAuthProperties {
      */
     public void setExcludedPaths(List<String> excludedPaths) {
 	this.excludedPaths = excludedPaths;
+    }
+
+    public long getRefreshTtlMillis() {
+	return refreshTtlMillis;
+    }
+
+    public void setRefreshTtlMillis(long refreshTtlMillis) {
+	this.refreshTtlMillis = refreshTtlMillis;
+    }
+
+    public boolean isRefreshEnabled() {
+	return refreshEnabled;
+    }
+
+    public void setRefreshEnabled(boolean refreshEnabled) {
+	this.refreshEnabled = refreshEnabled;
+    }
+
+    public boolean isRefreshRotate() {
+	return refreshRotate;
+    }
+
+    public void setRefreshRotate(boolean refreshRotate) {
+	this.refreshRotate = refreshRotate;
+    }
+
+    public boolean isReuseDetection() {
+	return reuseDetection;
+    }
+
+    public void setReuseDetection(boolean reuseDetection) {
+	this.reuseDetection = reuseDetection;
     }
 }

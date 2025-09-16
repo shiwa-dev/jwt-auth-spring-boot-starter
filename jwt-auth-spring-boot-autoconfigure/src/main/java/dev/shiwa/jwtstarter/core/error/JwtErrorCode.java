@@ -1,0 +1,5 @@
+package dev.shiwa.jwtstarter.core.error;
+
+public enum JwtErrorCode {
+    INVALID_TOKEN, EXPIRED_TOKEN, INVALID_TOKEN_TYPE, REFRESH_DISABLED, REFRESH_REUSE_DETECTED, NOT_AUTHENTICATED,
+}

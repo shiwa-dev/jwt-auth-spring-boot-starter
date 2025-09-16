@@ -35,8 +35,11 @@ public class JwtLoginControllerTest {
 
 	// Assert
 	assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-	assertThat(response.getBody()).containsKey("token");
-	assertThat(((String) response.getBody().get("token"))).startsWith("ey");
+	assertThat(response.getBody()).containsKey("accessToken");
+	assertThat(((String) response.getBody().get("accessToken"))).startsWith("ey");
+
+	assertThat(response.getBody()).containsKey("refreshToken");
+	assertThat(((String) response.getBody().get("refreshToken"))).startsWith("ey");
     }
 
     @Test

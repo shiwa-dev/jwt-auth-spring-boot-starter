@@ -83,6 +83,11 @@ public class JwtTokenVerifier {
 	return new JwtAuthentication(subject, roles, issuedAt, expiration);
     }
 
+    public Claims parse(String token) {
+	return Jwts.parserBuilder().requireIssuer(jwtAuthProperties.getIssuer()).setSigningKey(secretKey).build()
+		.parseClaimsJws(stripBearerPrefix(token)).getBody();
+    }
+
     /**
      * Validates the given JWT token by checking:
      * <ul>
@@ -125,6 +130,22 @@ public class JwtTokenVerifier {
 	}
 
 	return false;
+    }
+
+    public boolean isAccessToken(String token) {
+	try {
+	    return "access".equals(parse(token).get("type", String.class));
+	} catch (JwtException e) {
+	    return false;
+	}
+    }
+
+    public boolean isRefreshToken(String token) {
+	try {
+	    return "refresh".equals(parse(token).get("type", String.class));
+	} catch (JwtException e) {
+	    return false;
+	}
     }
 
     /**

@@ -1,9 +1,7 @@
 package dev.shiwa.jwtstarter.demo;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dev.shiwa.jwtstarter.autoconfigure.JwtAuthProperties;
 import dev.shiwa.jwtstarter.core.JwtTokenGenerator;
+import dev.shiwa.jwtstarter.core.JwtTokenVerifier;
+import dev.shiwa.jwtstarter.core.refresh.RefreshTokenService;
+import dev.shiwa.jwtstarter.core.refresh.RefreshTokenStore;
+import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -36,8 +39,20 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Authentication", description = "Login & Token Generation")
 public class JwtLoginController {
 
-    @Autowired
-    private JwtTokenGenerator tokenGenerator;
+    private final JwtTokenGenerator generator;
+    private final JwtTokenVerifier verifier;
+    private final RefreshTokenService refreshService;
+    private final RefreshTokenStore store;
+    private final JwtAuthProperties jwtAuthProperties;
+
+    public JwtLoginController(JwtTokenGenerator g, JwtTokenVerifier v, RefreshTokenService rs, RefreshTokenStore s,
+	    JwtAuthProperties jwtAuthProperties) {
+	this.generator = g;
+	this.verifier = v;
+	this.refreshService = rs;
+	this.store = s;
+	this.jwtAuthProperties = jwtAuthProperties;
+    }
 
     /**
      * Performs a demo login and generates a JWT token.
@@ -56,14 +71,27 @@ public class JwtLoginController {
     @Operation(summary = "Demo login", description = "Generates a JWT token for a hardcoded user. Only for testing purposes.")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Login successful, token returned"),
 	    @ApiResponse(responseCode = "401", description = "Unauthorized – invalid credentials") })
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
-	// Für Demo: Benutzername + Passwort hartkodiert prüfen
-	if ("admin".equals(loginRequest.username()) && "password".equals(loginRequest.password())) {
-	    String token = tokenGenerator.generateToken(loginRequest.username(), List.of("USER", "ADMIN"));
-	    return ResponseEntity.ok(Map.of("token", token));
-	} else {
-	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
-	}
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+	if (!"admin".equals(loginRequest.username()) || !"password".equals(loginRequest.password()))
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+	List<String> roles = List.of("ADMIN", "USER");
+	String access = generator.generateAccessToken("admin", roles);
+	String refresh = generator.generateRefreshToken("admin");
+
+	Claims rt = verifier.parse(refresh);
+	store.save(rt.getId(), rt.getSubject(), rt.getExpiration().toInstant());
+
+	long expAt = System.currentTimeMillis() + jwtAuthProperties.getTtlMillis();
+
+	return ResponseEntity.ok(new LoginResponse(access, refresh, expAt));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshResponse> refresh(@RequestBody RefreshRequest req) {
+	RefreshTokenService.Tokens t = refreshService.refresh(req.refreshToken());
+	return ResponseEntity
+		.ok(new RefreshResponse(t.accessToken(), t.refreshToken(), t.accessTokenExpiresAtMillis()));
     }
 
     /**
@@ -73,5 +101,14 @@ public class JwtLoginController {
      * @param password the password
      */
     public record LoginRequest(String username, String password) {
+    }
+
+    public record LoginResponse(String accessToken, String refreshToken, long accessTokenExpiresAtMillis) {
+    }
+
+    public record RefreshRequest(String refreshToken) {
+    }
+
+    public record RefreshResponse(String accessToken, String refreshToken, long accessTokenExpiresAtMillis) {
     }
 }

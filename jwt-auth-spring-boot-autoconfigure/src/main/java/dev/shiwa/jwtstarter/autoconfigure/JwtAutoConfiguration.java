@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Bean;
 
 import dev.shiwa.jwtstarter.core.JwtTokenGenerator;
 import dev.shiwa.jwtstarter.core.JwtTokenVerifier;
+import dev.shiwa.jwtstarter.core.refresh.InMemoryRefreshTokenStore;
+import dev.shiwa.jwtstarter.core.refresh.RefreshTokenService;
+import dev.shiwa.jwtstarter.core.refresh.RefreshTokenStore;
 
 /**
  * Auto-configuration class for JWT token verification.
@@ -66,5 +69,18 @@ public class JwtAutoConfiguration {
     @Bean
     JwtTokenGenerator jwtTokenGenerator(JwtAuthProperties properties) {
 	return new JwtTokenGenerator(properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RefreshTokenStore refreshTokenStore() {
+	return new InMemoryRefreshTokenStore();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RefreshTokenService refreshTokenService(JwtTokenVerifier v, JwtTokenGenerator g, RefreshTokenStore s,
+	    JwtAuthProperties p) {
+	return new RefreshTokenService(v, g, s, p);
     }
 }

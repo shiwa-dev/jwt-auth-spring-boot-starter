@@ -2,6 +2,7 @@ package dev.shiwa.jwtstarter.core;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -52,6 +53,11 @@ public class JwtTokenGenerator {
 	this.secretKey = Keys.hmacShaKeyFor(properties.getSecret().getBytes());
     }
 
+    @Deprecated
+    public String generateToken(String subject, List<String> roles) {
+	return this.generateAccessToken(subject, roles);
+    }
+
     /**
      * Generates a signed JWT token for the specified subject and roles.
      *
@@ -70,14 +76,15 @@ public class JwtTokenGenerator {
      * @return a signed JWT token string
      * @throws RuntimeException if token creation fails
      */
-    public String generateToken(String subject, List<String> roles) {
+    public String generateAccessToken(String subject, List<String> roles) {
 	try {
 	    long nowMillis = System.currentTimeMillis();
 	    Date now = new Date(nowMillis);
 	    Date expiry = new Date(nowMillis + properties.getTtlMillis());
 
-	    final var token = Jwts.builder().setSubject(subject).claim("roles", roles).setIssuer(properties.getIssuer())
-		    .setIssuedAt(now).setExpiration(expiry).signWith(secretKey, SignatureAlgorithm.HS256).compact();
+	    final var token = Jwts.builder().setSubject(subject).claim("roles", roles).claim("type", "access")
+		    .setIssuer(properties.getIssuer()).setIssuedAt(now).setExpiration(expiry)
+		    .signWith(secretKey, SignatureAlgorithm.HS256).compact();
 
 	    log.info("🔐 Token generated for subject: {}", subject);
 	    log.debug("→ roles={}, expiresIn={}s", roles, properties.getTtlMillis());
@@ -87,5 +94,14 @@ public class JwtTokenGenerator {
 	    log.error("🚨 Failed to generate token for subject '{}': {}", subject, e.getMessage());
 	    throw e;
 	}
+    }
+
+    public String generateRefreshToken(String subject) {
+	long now = System.currentTimeMillis();
+	String jti = UUID.randomUUID().toString();
+	return Jwts.builder().setSubject(subject).setIssuer(properties.getIssuer()).setId(jti) // jti für
+											       // Store/Revocation
+		.setIssuedAt(new Date(now)).setExpiration(new Date(now + properties.getRefreshTtlMillis()))
+		.claim("type", "refresh").signWith(secretKey, SignatureAlgorithm.HS256).compact();
     }
 }
