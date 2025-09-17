@@ -25,29 +25,37 @@ public class RefreshTokenService {
     public Tokens refresh(String refreshToken) {
 	if (!props.isRefreshEnabled())
 	    throw new JwtAuthException(JwtErrorCode.REFRESH_DISABLED, "Refresh token flow is disabled");
-	Claims claims = verifier.parse(refreshToken);
+
+	final Claims claims;
+	try {
+	    claims = verifier.parse(refreshToken);
+	} catch (io.jsonwebtoken.ExpiredJwtException e) {
+	    throw new JwtAuthException(JwtErrorCode.EXPIRED_TOKEN, "Refresh token expired");
+	} catch (io.jsonwebtoken.JwtException e) {
+	    throw new JwtAuthException(JwtErrorCode.INVALID_TOKEN, "Invalid refresh token: " + e.getMessage());
+	}
+
 	if (!"refresh".equals(claims.get("type", String.class)))
 	    throw new JwtAuthException(JwtErrorCode.INVALID_TOKEN_TYPE, "Token type must be 'refresh'");
 
 	String jti = claims.getId();
 	String subject = claims.getSubject();
 
-	// Reuse detection: wenn jti nicht aktiv → mögliche Wiederverwendung eines alten
-	// RT
+	// Reuse detection
 	if (props.isReuseDetection() && !store.isActive(jti)) {
-	    // hart: alle Sessions des Subjects killen
+	    // kill all sessions of this subject
 	    store.revokeAllForSubject(subject);
 	    throw new JwtAuthException(JwtErrorCode.REFRESH_REUSE_DETECTED, "Refresh token reuse detected");
 	}
 
-	// Rotation: altes RT invalidieren, neues ausgeben
+	// Rotation: invalidate old RT, generate new one
 	if (props.isRefreshRotate())
 	    store.revoke(jti);
 
 	String access = generator.generateAccessToken(subject, claims.get("roles", List.class));
 	String refresh = generator.generateRefreshToken(subject);
 
-	// neues jti speichern
+	// save new jti
 	Claims newRtClaims = verifier.parse(refresh);
 	store.save(newRtClaims.getId(), subject, newRtClaims.getExpiration().toInstant());
 

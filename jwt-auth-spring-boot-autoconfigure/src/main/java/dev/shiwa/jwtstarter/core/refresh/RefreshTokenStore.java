@@ -7,7 +7,7 @@ public interface RefreshTokenStore {
 
     boolean isActive(String jti);
 
-    String subjectFor(String jti); // optional
+    String subjectFor(String jti);
 
     void revoke(String jti);
 
