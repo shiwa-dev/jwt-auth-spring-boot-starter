@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [Unreleased]
+
+### ✨ Added
+- Refresh token support (access & refresh token pair issued at login)
+- `/auth/refresh` endpoint to obtain new tokens
+- Configurable refresh options:
+  - `jwt.auth.refreshTtlMillis` (default: 7 days)
+  - `jwt.auth.refreshEnabled` (default: true)
+  - `jwt.auth.refreshRotate` (default: true)
+  - `jwt.auth.reuseDetection` (default: true)
+- Demo app updated with refresh flow examples in Swagger UI and README
+
+### 🐛 Fixed
+- (add fixes here)
+
+### ⚠️ Changed
+
+### 💥 Breaking Changes
+- Renamed `JwtLoginController` to `JwtAuthController` in demo module
+
+### 🔥 Removed
+- (add removals here)
+
+---
+
+
+
 ## [0.1.0] – 2025-08-27
 
 ### ✨ Added

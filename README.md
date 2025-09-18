@@ -128,6 +128,20 @@ jwt:
     protected-paths:
       - /api/*
 
+
+    # Refresh token settings
+    # Time-to-live for refresh tokens in milliseconds (default: 7 days)
+    refreshTtlMillis: 604800000
+
+    # Enable/disable refresh token flow (default: true)
+    refreshEnabled: true
+
+    # If true, refresh tokens are rotated (old ones invalidated) on every use
+    refreshRotate: true
+
+    # If true, reuse of old refresh tokens is detected and all sessions for the subject are revoked
+    reuseDetection: true
+
     # List of URL patterns to exclude from JWT authentication
     # Supports Ant-style patterns as above. Can be left empty if no exclusions are needed.
     excluded-paths:
@@ -143,6 +157,11 @@ jwt.auth.secret=my-super-secret-key-1234567890!!
 jwt.auth.ttlMillis=3600000
 jwt.auth.protected-paths=/api/*
 jwt.auth.excluded-paths=
+jwt.auth.refreshTtlMillis=604800000
+jwt.auth.refreshEnabled=true
+jwt.auth.refreshRotate=true
+jwt.auth.reuseDetection=true
+
 ```
 
 ### 🧪 Example Usage
@@ -187,6 +206,24 @@ public class MyController {
     public JwtAuthentication me(@RequestHeader("Authorization") String token) {
         return verifier.parseToken(token);
     }
+
+    /**
+     * Example refresh endpoint.
+     * Accepts a refresh token and returns new access/refresh tokens.
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, Object>> refresh(@RequestBody Map<String, String> body) {
+        String refreshToken = body.get("refreshToken");
+        // Normally delegate to RefreshTokenService here
+        String newAccess = tokenGenerator.generateToken("demo-user", List.of("USER", "ADMIN"));
+        String newRefresh = tokenGenerator.generateRefreshToken("demo-user");
+        return ResponseEntity.ok(Map.of(
+            "accessToken", newAccess,
+            "refreshToken", newRefresh,
+            "accessTokenExpiresAtMillis", System.currentTimeMillis() + 3600000
+        ));
+    }
+
 }
 ```
 
@@ -233,6 +270,18 @@ public class MyController {
 
    **Expected**: `true` (if the token is valid).
 
+
+6. **Call /refresh** – Use refresh token to obtain new tokens:
+
+   ```bash
+   curl -X POST http://localhost:8080/refresh \
+     -H "Content-Type: application/json" \
+     -d '{"refreshToken":"<REFRESH_TOKEN_HERE>"}'
+   ```
+
+   **Expected**: A JSON object containing a new access token, a new refresh token, and the new expiration timestamp.
+
+
 5. **Swagger UI** (optional):
    Open `http://localhost:8080/swagger-ui/index.html`, click **Authorize**, enter `Bearer <JWT_HERE>` and confirm. Afterwards, you can call `/api/me` and `/api/secure` directly from the UI.
 
@@ -255,7 +304,43 @@ You will see the available endpoints:
 - `POST /auth/login` – Returns a JWT token for a valid user  
 - `GET /api/verify` – Verifies the JWT  
 - `GET /api/me` – Returns parsed token details (`JwtAuthentication`)  
-- `GET /api/has-role` – Role check for current token  
+- `GET /api/has-role` – Role check for current token
+- `POST /auth/refresh` – Exchanges a refresh token for a new access & refresh token pair  
+
+### 🔄 Example Refresh Flow
+
+1. Use `/auth/login` to get both `accessToken` and `refreshToken`:
+
+```bash
+curl -X POST http://localhost:8080/auth/login   -H "Content-Type: application/json"   -d '{"username":"admin","password":"admin"}'
+```
+
+Response:
+```json
+{
+  "accessToken": "<ACCESS_TOKEN_HERE>",
+  "refreshToken": "<REFRESH_TOKEN_HERE>",
+  "accessTokenExpiresAtMillis": 1737200000000
+}
+```
+
+2. When the access token expires, call `/auth/refresh` with the refresh token:
+
+```bash
+curl -X POST http://localhost:8080/auth/refresh   -H "Content-Type: application/json"   -d '{"refreshToken":"<REFRESH_TOKEN_HERE>"}'
+```
+
+Response:
+```json
+{
+  "accessToken": "<NEW_ACCESS_TOKEN>",
+  "refreshToken": "<NEW_REFRESH_TOKEN>",
+  "accessTokenExpiresAtMillis": 1737203600000
+}
+```
+
+3. Use the new `accessToken` for further API calls.
+  
 
 ### 🔑 Using Authorization Header in Swagger UI
 
@@ -263,6 +348,17 @@ You will see the available endpoints:
 2. Enter your token in the format: Bearer <your-jwt-token>
 3. Click **"Authorize"**, then close the popup.
 4. All protected endpoints will now include the token automatically.
+
+**Test the refresh flow in Swagger UI**
+
+1. Expand **`POST /auth/login`**, click **Try it out**, send the request and copy the returned `refreshToken`.
+2. Expand **`POST /auth/refresh`**, click **Try it out**, and paste this body:
+   ```json
+   { "refreshToken": "<PASTE_REFRESH_TOKEN_HERE>" }
+   ```
+3. Execute the request. You should receive a **new** `accessToken` and `refreshToken`.
+4. Click **Authorize** again and paste `Bearer <NEW_ACCESS_TOKEN>` to call protected endpoints with the latest token.
+
 
 ### 🧪 Example
 
@@ -277,6 +373,68 @@ curl -X POST http://localhost:8080/auth/login -H "Content-Type: application/json
 
 ---
 
+
+
+---
+
+## 🔐 Refresh Token Flow
+
+The starter supports **refresh tokens** out of the box.  
+This allows clients to obtain a new access token without forcing the user to log in again.
+
+### Configuration
+
+```yaml
+jwt:
+  auth:
+    secret: your-256-bit-secret
+    issuer: your-app-name
+    ttlMillis: 3600000
+
+    # Refresh token settings
+    refresh-enabled: true
+    refresh-rotate: true
+    reuse-detection: true
+```
+
+### Endpoints
+
+- `POST /auth/login`  
+  Issues both **access** and **refresh tokens**.
+
+  Example response:
+  ```json
+  {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "accessTokenExpiresAtMillis": 1737200000000
+  }
+  ```
+
+- `POST /auth/refresh`  
+  Exchanges a refresh token for a new token pair.  
+
+  Request:
+  ```bash
+  curl -X POST http://localhost:8080/auth/refresh     -H "Content-Type: application/json"     -d '{"refreshToken":"<your-refresh-token>"}'
+  ```
+
+  Response:
+  ```json
+  {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "accessTokenExpiresAtMillis": 1737203600000
+  }
+  ```
+
+### Behavior
+
+- **Rotation**: if enabled, old refresh tokens are invalidated once used.  
+- **Reuse detection**: if an invalidated token is reused, all tokens for that user are revoked.  
+- **Error handling**: expired/invalid refresh tokens → `401 Unauthorized`.
+
+
 ## 🆚 Free vs. Pro
 
 | Feature                          | Free  | Pro |
@@ -285,7 +443,7 @@ curl -X POST http://localhost:8080/auth/login -H "Content-Type: application/json
 | Spring Boot autoconfiguration    |  ✅   | ✅  |
 | Multi-tenant support             |  ❌   | ✅  |
 | Redis token blacklist            |  ❌   | ✅  |
-| Refresh token handling           |  ❌   | ✅  |
+| Refresh token handling           |  ✅   | ✅  |
 | Admin dashboard                  |  ❌   | ✅  |
 | License enforcement              |  ❌   | ✅  |
 | Support                          | Community | Priority |
