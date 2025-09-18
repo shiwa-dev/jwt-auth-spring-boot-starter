@@ -4,14 +4,14 @@ public class JwtAuthException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    private final JwtErrorCode code;
+    private final JwtErrorCode errorCode;
 
-    public JwtAuthException(JwtErrorCode code, String message) {
+    public JwtAuthException(JwtErrorCode errorCode, String message) {
 	super(message);
-	this.code = code;
+	this.errorCode = errorCode;
     }
 
-    public JwtErrorCode getCode() {
-	return code;
+    public JwtErrorCode getErrorCode() {
+	return errorCode;
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * <p>
  * The application includes the following components:
  * <ul>
- * <li>{@link JwtLoginController} – handles demo login and token generation</li>
+ * <li>{@link JwtAuthController} – handles demo login and token generation</li>
  * <li>{@link JwtVerificationController} – provides endpoints to verify tokens
  * and roles</li>
  * </ul>

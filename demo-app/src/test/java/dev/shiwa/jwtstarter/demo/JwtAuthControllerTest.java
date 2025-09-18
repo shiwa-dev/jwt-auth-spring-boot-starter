@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JwtLoginControllerTest {
+public class JwtAuthControllerTest {
 
     @LocalServerPort
     private int port;

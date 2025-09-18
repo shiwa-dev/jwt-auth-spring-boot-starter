@@ -83,7 +83,7 @@ class RefreshTokenServiceTest {
 	service.refresh(bearer(refresh0));
 
 	JwtAuthException ex = assertThrows(JwtAuthException.class, () -> service.refresh(bearer(refresh0)));
-	assertEquals(JwtErrorCode.REFRESH_REUSE_DETECTED, ex.getCode());
+	assertEquals(JwtErrorCode.REFRESH_REUSE_DETECTED, ex.getErrorCode());
     }
 
     /** Wrong type: access token used at refresh endpoint should throw */
@@ -93,7 +93,7 @@ class RefreshTokenServiceTest {
 	String access = generator.generateAccessToken(subject, List.of("USER"));
 
 	JwtAuthException ex = assertThrows(JwtAuthException.class, () -> service.refresh(bearer(access)));
-	assertEquals(JwtErrorCode.INVALID_TOKEN_TYPE, ex.getCode());
+	assertEquals(JwtErrorCode.INVALID_TOKEN_TYPE, ex.getErrorCode());
     }
 
     /** Refresh disabled in properties */
@@ -107,7 +107,7 @@ class RefreshTokenServiceTest {
 	store.save(c.getId(), subject, c.getExpiration().toInstant());
 
 	JwtAuthException ex = assertThrows(JwtAuthException.class, () -> service.refresh(bearer(refresh)));
-	assertEquals(JwtErrorCode.REFRESH_DISABLED, ex.getCode());
+	assertEquals(JwtErrorCode.REFRESH_DISABLED, ex.getErrorCode());
     }
 
     /** Expired refresh token should throw EXPIRED_TOKEN */
@@ -118,7 +118,7 @@ class RefreshTokenServiceTest {
 	String expiredRefresh = generator.generateRefreshToken(subject);
 
 	JwtAuthException ex = assertThrows(JwtAuthException.class, () -> service.refresh(bearer(expiredRefresh)));
-	assertEquals(JwtErrorCode.EXPIRED_TOKEN, ex.getCode());
+	assertEquals(JwtErrorCode.EXPIRED_TOKEN, ex.getErrorCode());
     }
 
     /** After rotation, only the new jti must remain active */
