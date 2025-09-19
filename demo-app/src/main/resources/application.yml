@@ -12,6 +12,19 @@ jwt:
     # 60000 ms = 60 seconds
     ttlMillis: 60000
 
+    # Refresh token settings
+    # Time-to-live for refresh tokens in milliseconds (default: 7 days)
+    refreshTtlMillis: 604800000
+
+    # Enable/disable refresh token flow (default: true)
+    refreshEnabled: true
+
+    # If true, refresh tokens are rotated (old ones invalidated) on every use
+    refreshRotate: true
+
+    # If true, reuse of old refresh tokens is detected and all sessions for the subject are revoked
+    reuseDetection: true
+
     # List of URL patterns that require JWT authentication
     protected-paths:
       - /api/*
