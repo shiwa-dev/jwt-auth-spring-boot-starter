@@ -33,7 +33,7 @@ class RefreshTokenServiceTest {
 	props = new JwtAuthProperties();
 	props.setSecret(SECRET);
 	props.setIssuer("test-issuer");
-	props.setTtlMillis(5 * 60 * 1000);
+	props.setAccessTtlMillis(5 * 60 * 1000);
 	props.setRefreshTtlMillis(7 * 24 * 60 * 60 * 1000L);
 	props.setRefreshEnabled(true);
 	props.setRefreshRotate(true);

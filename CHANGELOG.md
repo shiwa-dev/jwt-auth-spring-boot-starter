@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### ⚠️ Changed
 
 ### 💥 Breaking Changes
+- Property `ttlMillis` has been renamed to `accessTtlMillis`
 - Renamed `JwtLoginController` to `JwtAuthController` in demo module
 
 ### 🔥 Removed

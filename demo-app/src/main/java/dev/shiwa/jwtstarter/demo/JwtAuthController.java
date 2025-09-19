@@ -123,7 +123,7 @@ public class JwtAuthController {
 	Claims rt = verifier.parse(refresh);
 	store.save(rt.getId(), rt.getSubject(), rt.getExpiration().toInstant());
 
-	long expAt = System.currentTimeMillis() + jwtAuthProperties.getTtlMillis();
+	long expAt = System.currentTimeMillis() + jwtAuthProperties.getAccessTtlMillis();
 
 	return ResponseEntity.ok(new LoginResponse(access, refresh, expAt));
     }

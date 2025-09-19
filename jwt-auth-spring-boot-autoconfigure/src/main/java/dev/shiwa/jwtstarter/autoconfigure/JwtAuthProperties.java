@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *   auth:
  *     issuer: my-app
  *     secret: my-secret-key
- *     ttlMillis: 60000
+ *     accessTtlMillis: 60000
  *     protected-paths:
  *       - /api/*
  *     excluded-paths:
@@ -52,7 +52,7 @@ public class JwtAuthProperties {
      * Token expiration time in milliseconds. Determines how long a generated JWT is
      * valid.
      */
-    private long ttlMillis;
+    private long accessTtlMillis;
 
     private long refreshTtlMillis = 7L * 24 * 60 * 60 * 1000; // 7 days
     private boolean refreshEnabled = true;
@@ -107,17 +107,49 @@ public class JwtAuthProperties {
      *
      * @return the TTL in ms
      */
-    public long getTtlMillis() {
-	return ttlMillis;
+    public long getAccessTtlMillis() {
+	return accessTtlMillis;
     }
 
     /**
      * Sets the time-to-live for a JWT token in milliseconds.
      *
-     * @param ttlMillis the TTL in ms
+     * @param accessTtlMillis the TTL in ms
      */
-    public void setTtlMillis(long ttlMillis) {
-	this.ttlMillis = ttlMillis;
+    public void setAccessTtlMillis(long accessTtlMillis) {
+	this.accessTtlMillis = accessTtlMillis;
+    }
+
+    public long getRefreshTtlMillis() {
+	return refreshTtlMillis;
+    }
+
+    public void setRefreshTtlMillis(long refreshTtlMillis) {
+	this.refreshTtlMillis = refreshTtlMillis;
+    }
+
+    public boolean isRefreshEnabled() {
+	return refreshEnabled;
+    }
+
+    public void setRefreshEnabled(boolean refreshEnabled) {
+	this.refreshEnabled = refreshEnabled;
+    }
+
+    public boolean isRefreshRotate() {
+	return refreshRotate;
+    }
+
+    public void setRefreshRotate(boolean refreshRotate) {
+	this.refreshRotate = refreshRotate;
+    }
+
+    public boolean isReuseDetection() {
+	return reuseDetection;
+    }
+
+    public void setReuseDetection(boolean reuseDetection) {
+	this.reuseDetection = reuseDetection;
     }
 
     /**
@@ -172,37 +204,5 @@ public class JwtAuthProperties {
      */
     public void setExcludedPaths(List<String> excludedPaths) {
 	this.excludedPaths = excludedPaths;
-    }
-
-    public long getRefreshTtlMillis() {
-	return refreshTtlMillis;
-    }
-
-    public void setRefreshTtlMillis(long refreshTtlMillis) {
-	this.refreshTtlMillis = refreshTtlMillis;
-    }
-
-    public boolean isRefreshEnabled() {
-	return refreshEnabled;
-    }
-
-    public void setRefreshEnabled(boolean refreshEnabled) {
-	this.refreshEnabled = refreshEnabled;
-    }
-
-    public boolean isRefreshRotate() {
-	return refreshRotate;
-    }
-
-    public void setRefreshRotate(boolean refreshRotate) {
-	this.refreshRotate = refreshRotate;
-    }
-
-    public boolean isReuseDetection() {
-	return reuseDetection;
-    }
-
-    public void setReuseDetection(boolean reuseDetection) {
-	this.reuseDetection = reuseDetection;
     }
 }

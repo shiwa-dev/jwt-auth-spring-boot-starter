@@ -121,7 +121,7 @@ jwt:
     # Token Time-To-Live (TTL) in milliseconds
     # Determines how long a generated token remains valid
     # 300000 ms = 5 minutes
-    ttlMillis: 300000
+    accessTtlMillis: 300000
 
     # Refresh token settings
     # Time-to-live for refresh tokens in milliseconds (default: 7 days)
@@ -153,7 +153,7 @@ jwt:
 ```properties
 jwt.auth.issuer=jwt-starter-demo
 jwt.auth.secret=my-super-secret-key-1234567890!!
-jwt.auth.ttlMillis=300000
+jwt.auth.accessTtlMillis=300000
 jwt.auth.refreshTtlMillis=604800000
 jwt.auth.refreshEnabled=true
 jwt.auth.refreshRotate=true
@@ -388,9 +388,10 @@ jwt:
   auth:
     secret: your-256-bit-secret
     issuer: your-app-name
-    ttlMillis: 3600000
+    accessTtlMillis: 3600000
 
     # Refresh token settings
+    refreshTtlMillis: 604800000
     refresh-enabled: true
     refresh-rotate: true
     reuse-detection: true

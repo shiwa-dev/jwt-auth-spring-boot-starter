@@ -10,7 +10,7 @@ jwt:
     # Token Time-To-Live (TTL) in milliseconds
     # Determines how long a generated token remains valid
     # 60000 ms = 60 seconds
-    ttlMillis: 60000
+    accessTtlMillis: 60000
 
     # Refresh token settings
     # Time-to-live for refresh tokens in milliseconds (default: 7 days)

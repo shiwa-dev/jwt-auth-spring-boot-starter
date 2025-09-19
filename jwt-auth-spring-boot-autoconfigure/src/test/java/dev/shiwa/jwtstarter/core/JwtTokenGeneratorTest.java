@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dev.shiwa.jwtstarter.autoconfigure.JwtAuthProperties;
-import dev.shiwa.jwtstarter.core.JwtTokenGenerator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -30,7 +29,7 @@ class JwtTokenGeneratorTest {
     void setUp() {
 	props = new JwtAuthProperties();
 	props.setIssuer("test-issuer");
-	props.setTtlMillis(3600000); // 1 hour
+	props.setAccessTtlMillis(3600000); // 1 hour
 
 	props.setSecret("my-super-secret-key-1234567890!!");
 	this.secretKey = Keys.hmacShaKeyFor(props.getSecret().getBytes());

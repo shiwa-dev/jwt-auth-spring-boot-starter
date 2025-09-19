@@ -16,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import dev.shiwa.jwtstarter.autoconfigure.JwtAuthProperties;
-import dev.shiwa.jwtstarter.core.JwtAuthentication;
-import dev.shiwa.jwtstarter.core.JwtTokenVerifier;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;

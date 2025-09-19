@@ -80,14 +80,14 @@ public class JwtTokenGenerator {
 	try {
 	    long nowMillis = System.currentTimeMillis();
 	    Date now = new Date(nowMillis);
-	    Date expiry = new Date(nowMillis + properties.getTtlMillis());
+	    Date expiry = new Date(nowMillis + properties.getAccessTtlMillis());
 
 	    final var token = Jwts.builder().setSubject(subject).claim("roles", roles).claim("type", "access")
 		    .setIssuer(properties.getIssuer()).setIssuedAt(now).setExpiration(expiry)
 		    .signWith(secretKey, SignatureAlgorithm.HS256).compact();
 
 	    log.info("🔐 Token generated for subject: {}", subject);
-	    log.debug("→ roles={}, expiresIn={}s", roles, properties.getTtlMillis());
+	    log.debug("→ roles={}, expiresIn={}s", roles, properties.getAccessTtlMillis());
 
 	    return token;
 	} catch (Exception e) {

@@ -92,7 +92,7 @@ public class RefreshTokenService {
 	Claims newRtClaims = verifier.parse(refresh);
 	store.save(newRtClaims.getId(), subject, newRtClaims.getExpiration().toInstant());
 
-	return new Tokens(access, refresh, System.currentTimeMillis() + props.getTtlMillis());
+	return new Tokens(access, refresh, System.currentTimeMillis() + props.getAccessTtlMillis());
     }
 
     /**

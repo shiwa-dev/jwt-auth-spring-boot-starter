@@ -8,8 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import dev.shiwa.jwtstarter.autoconfigure.JwtAuthProperties;
-
 class JwtAuthPropertiesTest {
 
     private JwtAuthProperties props;
@@ -33,8 +31,8 @@ class JwtAuthPropertiesTest {
 
     @Test
     void testTtlMillisGetterAndSetter() {
-	props.setTtlMillis(3600000L); // 1 hour
-	assertEquals(3600000L, props.getTtlMillis());
+	props.setAccessTtlMillis(3600000L); // 1 hour
+	assertEquals(3600000L, props.getAccessTtlMillis());
     }
 
     @Test
