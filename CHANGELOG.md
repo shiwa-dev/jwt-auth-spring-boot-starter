@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [Unreleased]
+## [0.2.0] – 2025-09-19
 
 ### ✨ Added
 - Refresh token support (access & refresh token pair issued at login)
@@ -19,21 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - `jwt.auth.reuseDetection` (default: true)
 - Demo app updated with refresh flow examples in Swagger UI and README
 
-### 🐛 Fixed
-- (add fixes here)
-
-### ⚠️ Changed
-
 ### 💥 Breaking Changes
 - Property `ttlMillis` has been renamed to `accessTtlMillis`
 - Renamed `JwtLoginController` to `JwtAuthController` in demo module
 
-### 🔥 Removed
-- (add removals here)
-
 ---
-
-
 
 ## [0.1.0] – 2025-08-27
 
