@@ -94,14 +94,14 @@ To build just the starter module:
 <dependency>
   <groupId>dev.shiwa.jwtstarter</groupId>
   <artifactId>jwt-auth-spring-boot-starter</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
 ### ⚙️ Quick Start (Gradle)
 
 ```groovy
-implementation 'dev.shiwa.jwtstarter:jwt-auth-spring-boot-starter:0.1.0'
+implementation 'dev.shiwa.jwtstarter:jwt-auth-spring-boot-starter:0.2.0'
 ```
 
 ---
