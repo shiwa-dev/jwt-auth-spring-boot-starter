@@ -9,8 +9,8 @@ jwt:
 
     # Token Time-To-Live (TTL) in milliseconds
     # Determines how long a generated token remains valid
-    # 3600000 ms = 1 hour
-    ttlMillis: 3600000
+    # 60000 ms = 60 seconds
+    ttlMillis: 60000
 
     # List of URL patterns that require JWT authentication
     protected-paths:
