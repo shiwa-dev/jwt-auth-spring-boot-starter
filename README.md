@@ -120,14 +120,8 @@ jwt:
 
     # Token Time-To-Live (TTL) in milliseconds
     # Determines how long a generated token remains valid
-    # 3600000 ms = 1 hour
-    ttlMillis: 3600000
-
-    # List of URL patterns that require JWT authentication
-    # Supports Ant-style path patterns like /api/*, /api/**, /admin/**
-    protected-paths:
-      - /api/*
-
+    # 300000 ms = 5 minutes
+    ttlMillis: 300000
 
     # Refresh token settings
     # Time-to-live for refresh tokens in milliseconds (default: 7 days)
@@ -141,6 +135,11 @@ jwt:
 
     # If true, reuse of old refresh tokens is detected and all sessions for the subject are revoked
     reuseDetection: true
+    
+    # List of URL patterns that require JWT authentication
+    # Supports Ant-style path patterns like /api/*, /api/**, /admin/**
+    protected-paths:
+      - /api/*
 
     # List of URL patterns to exclude from JWT authentication
     # Supports Ant-style patterns as above. Can be left empty if no exclusions are needed.
@@ -154,14 +153,13 @@ jwt:
 ```properties
 jwt.auth.issuer=jwt-starter-demo
 jwt.auth.secret=my-super-secret-key-1234567890!!
-jwt.auth.ttlMillis=3600000
-jwt.auth.protected-paths=/api/*
-jwt.auth.excluded-paths=
+jwt.auth.ttlMillis=300000
 jwt.auth.refreshTtlMillis=604800000
 jwt.auth.refreshEnabled=true
 jwt.auth.refreshRotate=true
 jwt.auth.reuseDetection=true
-
+jwt.auth.protected-paths=/api/*
+jwt.auth.excluded-paths=
 ```
 
 ### 🧪 Example Usage
@@ -182,12 +180,30 @@ public class MyController {
      * For demo purposes, a static JWT token is returned without credential checks.
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login() {
+    public ResponseEntity<Map<String, Object>> login() {
        // Here you would normally check user credentials (username/password)
-       // For testing purposes, we just return a demo token without validation
-       String token = tokenGenerator.generateToken("demo-user", List.of("USER", "ADMIN"));
-       
-       return ResponseEntity.ok(Map.of("token", token));
+	    // For testing purposes, we just return a demo token without validation
+	    String accessToken = tokenGenerator.generateAccessToken("demo-user", List.of("USER", "ADMIN"));
+	    String refreshToken = tokenGenerator.generateRefreshToken("demo-user");
+
+	    return ResponseEntity.ok(Map.of("accessToken", accessToken, "refreshToken", refreshToken,
+		    "accessTokenExpiresAtMillis", System.currentTimeMillis() + 3600000));
+    }
+    
+    /**
+     * Example refresh endpoint.
+     * Accepts a refresh token and returns new access/refresh tokens.
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, Object>> refresh(@RequestBody Map<String, String> body) {
+        // Normally delegate to RefreshTokenService here
+        String newAccess = tokenGenerator.generateAccessToken("demo-user", List.of("USER", "ADMIN"));
+        String newRefresh = tokenGenerator.generateRefreshToken("demo-user");
+        return ResponseEntity.ok(Map.of(
+            "accessToken", newAccess,
+            "refreshToken", newRefresh,
+            "accessTokenExpiresAtMillis", System.currentTimeMillis() + 3600000
+        ));
     }
 
     /**
@@ -205,23 +221,6 @@ public class MyController {
     @GetMapping("/api/me")
     public JwtAuthentication me(@RequestHeader("Authorization") String token) {
         return verifier.parseToken(token);
-    }
-
-    /**
-     * Example refresh endpoint.
-     * Accepts a refresh token and returns new access/refresh tokens.
-     */
-    @PostMapping("/refresh")
-    public ResponseEntity<Map<String, Object>> refresh(@RequestBody Map<String, String> body) {
-        String refreshToken = body.get("refreshToken");
-        // Normally delegate to RefreshTokenService here
-        String newAccess = tokenGenerator.generateToken("demo-user", List.of("USER", "ADMIN"));
-        String newRefresh = tokenGenerator.generateRefreshToken("demo-user");
-        return ResponseEntity.ok(Map.of(
-            "accessToken", newAccess,
-            "refreshToken", newRefresh,
-            "accessTokenExpiresAtMillis", System.currentTimeMillis() + 3600000
-        ));
     }
 
 }
@@ -245,7 +244,7 @@ public class MyController {
    **Response** (example):
 
    ```json
-   { "token": "<JWT_HERE>" }
+   { "accessToken": "<JWT_HERE>", "refreshToken": "<JWT_HERE>", "accessTokenExpiresAtMillis": "1758298575931" }
    ```
 
    Copy the value of `token` (without quotes).
@@ -301,18 +300,18 @@ http://localhost:8080/swagger-ui/index.html
 
 You will see the available endpoints:
 
-- `POST /auth/login` – Returns a JWT token for a valid user  
-- `GET /api/verify` – Verifies the JWT  
-- `GET /api/me` – Returns parsed token details (`JwtAuthentication`)  
+- `POST /auth/login` – Returns a JWT token for a valid user
+- `POST /auth/refresh` – Exchanges a refresh token for a new access & refresh token pair
+- `GET /api/verify` – Verifies the JWT
+- `GET /api/me` – Returns parsed token details (`JwtAuthentication`)
 - `GET /api/has-role` – Role check for current token
-- `POST /auth/refresh` – Exchanges a refresh token for a new access & refresh token pair  
 
 ### 🔄 Example Refresh Flow
 
 1. Use `/auth/login` to get both `accessToken` and `refreshToken`:
 
 ```bash
-curl -X POST http://localhost:8080/auth/login   -H "Content-Type: application/json"   -d '{"username":"admin","password":"admin"}'
+curl -X POST http://localhost:8080/auth/login   -H "Content-Type: application/json"   -d '{"username":"admin","password":"password"}'
 ```
 
 Response:
@@ -365,7 +364,7 @@ Response:
 1. Use `/auth/login` to get a token:
 
 ```bash
-curl -X POST http://localhost:8080/auth/login -H "Content-Type: application/json" -d '{"username":"admin","password":"admin"}'
+curl -X POST http://localhost:8080/auth/login -H "Content-Type: application/json" -d '{"username":"admin","password":"password"}'
 ```
 
 2. Copy the token from the response and paste it in Swagger UI.
